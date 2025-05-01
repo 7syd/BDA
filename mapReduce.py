@@ -30,7 +30,7 @@ def reducer(mapped_data):
         elif marks >= 70: grade = 'C'
         elif marks >= 60: grade = 'D'
         else: grade = 'F'
-        reduced_data.append((student_id, name, marks, grade))a
+        reduced_data.append((student_id, name, marks, grade))
     return reduced_data
 
 mapped = mapper(df_original)
