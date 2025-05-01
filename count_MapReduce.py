@@ -1,68 +1,29 @@
-text = '''I like Hadoop.
-          Hadoop is good for big data computing.
-          MapReduce is part of Hadoop.
-          This is an example of MapReduce.
-        '''
-
-
-
 def mapper(text):
-    result = []
-    words = text.split()
-    for word in words:
-        word = word.strip('.,!?').lower()
-        result.append((word,1))
+    return [(word.lower(), 1) for word in text.split()]
 
-    return result
+def shuffle_and_sort(mapped):
+    from collections import defaultdict
+    grouped = defaultdict(list)
+    for word, count in mapped:
+        grouped[word].append(count)
+    return grouped
 
+def reducer(grouped):
+    return {word: sum(counts) for word, counts in grouped.items()}
 
+if __name__ == "__main__":
+    input_text = """
+    Hello world
+    Hello sheeesh
+    MapReduce is powerful
+    Hello again
+    Bye Bye
+    """
 
+    mapped = [pair for line in input_text.strip().split('\n') for pair in mapper(line)]
+    grouped = shuffle_and_sort(mapped)
+    result = reducer(grouped)
 
-map_output = mapper(text)
-print("Result: ", map_output)
-
-
-
-
-
-def shuffle_sort(mp_output):
-    result = {}
-    for word,count in mp_output:
-        if word in result:
-            result[word].append(count)
-        else:
-            result[word] = [count]
-    
-    return result
-
-
-
-
-def shuffle_sort(mp_output):
-    result = {}
-    for word,count in mp_output:
-        if word in result:
-            result[word].append(count)
-        else:
-            result[word] = [count]
-    
-    return result
-
-
-shuffle_sort_output = shuffle_sort(map_output)
-print("Shuffle Sort Output: ", shuffle_sort_output)
-
-
-
-
-def reducer(shuffle_sort_output):
-    result = {}
-
-    for word, counts in shuffle_sort_output.items():
-        result[word] = sum(counts)
-    return result
-
-
-
-reducer_output = reducer(shuffle_sort_output)
-print("Reducer output is: ", reducer_output)
+    print("Word Frequency:")
+    for word in sorted(result):
+        print(f"{word}: {result[word]}")
